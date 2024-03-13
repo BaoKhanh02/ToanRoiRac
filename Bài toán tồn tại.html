@@ -1,0 +1,161 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Xếp 10 hậu</title>
+    <style>
+        table {
+            border-collapse: collapse;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
+            width: 40px;
+            height: 40px;
+            text-align: center;
+        }
+        .queen {
+            width: 40px;
+            height: 40px;
+            background-size: cover;
+            background-image: url('queen.png'); /* Thay 'queen.png' bằng đường dẫn đến hình ảnh Hậu của bạn */
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container-fluid">
+        <div class="jumbotron p-3 my-3 bg-primary text-white khong-in">
+            <h2 id="app-title">Xếp 10 hậu</h2>
+            <p id="app-slogan">
+                Có 10 quân Hậu (cờ vua), cần xếp vào bàn cờ 10x10 sao cho chúng không ăn nhau (theo luật cờ vua).
+            </p>
+            <button class="btn btn-info" onclick="giai_toan()">Giải ngay: Tìm cách xếp</button>
+            <button class="btn btn-success" onclick="hien_nghiem_khac()">Hiển thị Nghiệm Khác</button>
+        </div>
+        <div class="row">
+            <div class="col-md-6 col1">
+                <div id="ban-co"></div>
+            </div>
+            <div class="col-md-6 col2">
+                <div id="ket-qua"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        var x = [], dem, currentSolution;
+        const n = 10;
+
+        // Hàm để tô màu ô bàn cờ
+        function to_mau(d, c, m) {
+            var tag = '.hang' + d + ',.cot' + c + ',.tong' + (d + c) + ',.hieu' + (d - c);
+            $(tag).css({ 'background-color': m });
+        }
+
+        // Hàm để vẽ nghiệm trên bàn cờ
+        function draw_kq(x) {
+            var s = '<table border=1>';
+            for (var d = 0; d < n; d++) {
+                s += '<tr>';
+                for (var c = 0; c < n; c++) {
+                    var tag = 'hang' + d + ' cot' + c + ' tong' + (d + c) + ' hieu' + (d - c);
+                    if (x[d] == c)
+                        s += '<td title="Hậu ' + (d + 1) + ': ở dòng ' + (d + 1) + ', cột ' + (c + 1) + '" class="queen ' + tag + '" onmouseover="to_mau(' + d + ',' + c + ',\'red\')" onmouseout="to_mau(' + d + ',' + c + ',\'white\')"></td>';
+                    else
+                        s += '<td class="' + tag + '"></td>';
+                }
+                s += '</tr>';
+            }
+            s += '</table>';
+            var bc = document.getElementById('ban-co');
+            bc.innerHTML = s;
+            bc.scrollIntoView({ behavior: "smooth", block: "end", inline: "nearest" });
+        }
+
+        // Hàm để hiển thị thông tin nghiệm
+        function show_kq() {
+            var s = '', t = [];
+            for (var i = 0; i < n; i++) {
+                t.push(x[i] + 1)
+            }
+            var nghiem = t.join(', ');
+            dem++;
+            var kq = document.getElementById('ket-qua')
+            kq.innerHTML = 'Nghiệm '  + ': ' + nghiem +
+                ' <button class="btn btn-sm btn-warning my-1" onclick="draw_kq([' + x.join(',') + '])">Draw nghiệm '  + '</button><br>';
+            if (dem == 1) {
+                draw_kq(x);
+                currentSolution = x.slice(); // Lưu nghiệm hiện tại
+            }
+        }
+
+        // Hàm để kiểm tra không ăn nhau
+        function check_ko_an_nhau(i) {
+            for (var j = 0; j < i; j++) {
+                if (x[i] == x[j] || i + x[i] == j + x[j] || i - x[i] == j - x[j]) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        // Hàm để xếp hậu
+        function xep_hau(i) {
+            for (var cot = 0; cot < n; cot++) {
+                x[i] = cot
+                if (check_ko_an_nhau(i)) { //nhánh cận
+                    if (i == n - 1) {
+                        //đã đến thằng cuối cùng
+                        show_kq(); //suy biến: ko đệ quy
+                    } else {
+                        xep_hau(i + 1); //đệ quy
+                    }
+                }
+            }
+        }
+
+        // Hàm để giải toán
+        function giai_toan() {
+            //x là vecto chứa nghiệm
+            //mỗi hậu ở 1 dòng
+            //x[i] là cột của hậu i : cột từ 0..n-1
+            for (var i = 0; i < n; i++) {
+                x[i] = 0; // chưa ở cột nào cả
+            }
+            dem = 0;
+            var kq = document.getElementById('ket-qua');
+            kq.innerHTML = ''; // Clear previous results
+            xep_hau(0); 
+        }
+
+        // Hàm để hiển thị nghiệm khác
+        function hien_nghiem_khac() {
+            dem = 0; // Reset số lượng nghiệm đã hiển thị
+            var kq = document.getElementById('ket-qua');
+            kq.innerHTML = ''; // Clear previous results
+            var randomSolution = currentSolution.slice(); // Lấy nghiệm hiện tại
+            while (arraysEqual(randomSolution, currentSolution)) {
+                shuffleArray(randomSolution); // Trộn lại nghiệm
+            }
+            x = randomSolution;
+            show_kq(); // Hiển thị nghiệm mới
+        }
+
+        // Hàm để so sánh hai mảng
+        function arraysEqual(arr1, arr2) {
+            return JSON.stringify(arr1) === JSON.stringify(arr2);
+        }
+
+        // Hàm để trộn mảng
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+    </script>
+</body>
+</html>

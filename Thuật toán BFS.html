@@ -1,0 +1,101 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thuật toán BFS Visualization</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 20px;
+        }
+        #graph-container {
+            margin-top: 20px;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 5px;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>Ví dụ về một bài sử dụng thuật toán BFS</h2>
+    
+    <div id="graph-container">
+        <img src="adawa.png" alt="Graph Visualization">
+
+    </div>
+    <p id="result"></p>
+
+    <script>
+        const N = 200;
+        const adj = new Array(N + 1).fill().map(() => []);
+
+        function bfs(s, t) {
+            const visited = new Array(N + 1).fill(false);
+            const queue = [];
+            const L = new Array(N + 1).fill(-1);
+            const trace = new Array(N + 1);
+
+            queue.push(s);
+            L[s] = 0;
+            visited[s] = true;
+
+            while (queue.length) {
+                const u = queue.shift();
+                for (const v of adj[u]) {
+                    if (!visited[v]) {
+                        L[v] = L[u] + 1;
+                        trace[v] = u;
+                        queue.push(v);
+                        visited[v] = true;
+                    }
+                }
+            }
+
+            const Path = [];
+            let x = t;
+
+            while (true) {
+                Path.push(x);
+                if (x === s) {
+                    break;
+                }
+                x = trace[x];
+            }
+
+            const resultDiv = document.getElementById('result');
+            resultDiv.textContent = `Đường ngắn nhất từ đỉnh ${s} đến ${t}: ${L[t]}\nPhần: ${Path.reverse().join(' -> ')}`;
+        }
+
+        // Function to add edges to the graph
+        function addEdge(u, v) {
+            adj[u].push(v);
+            adj[v].push(u);
+        }
+
+        // Example usage
+        const n = 6, m = 8, S = 1, T = 6;
+
+        addEdge(1, 2);
+        addEdge(1, 3);
+        addEdge(2, 4);
+        addEdge(2, 5);
+        addEdge(3, 6);
+        addEdge(4, 5);
+        addEdge(5, 6);
+        addEdge(3, 5);
+
+        bfs(S, T);
+
+        // Visualization of the graph can be added here using a graph library.
+        // For simplicity, the code focuses on BFS algorithm and result display.
+    </script>
+
+</body>
+</html>

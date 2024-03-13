@@ -1,0 +1,57 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bài Toán Đếm</title>
+</head>
+<body>
+
+    <!-- Tiêu đề của trang -->
+    <h1>Bài toán đếm</h1> 
+    <!-- Nội dung trang -->
+    <h2>Một cuộc thi có n người tham gia. Có bao nhiêu cách xếp hạng k người đầu tiên? (với điều kiện n lớn hơn hoặc bằng k)</h2>
+    <!-- Ô nhập để người dùng nhập số lượng người tham gia -->
+    <p>Số người tham gia: <input type="number" id="songuoi" value=" "></p>
+
+    <!-- Ô nhập để người dùng nhập số người cần xếp hạng -->
+    <p>Số người xếp hạng: <input type="number" id="xephang" value=" "></p>
+
+    <!-- Nút "Tính toán" để kích hoạt hàm tính toán -->
+    <button onclick="tinhtoan()">Tính toán</button>
+
+    <!-- Kết quả sẽ được hiển thị ở đây -->
+    <p id="ketqua">Kết quả sẽ hiện ở đây.</p>
+
+    <!-- Đoạn mã JavaScript -->
+    <script>
+        // Hàm tính toán 
+        function tinh(n, k) {
+            if (n < k) {
+                return 0;
+            }
+            var luythua = 1;
+            for (var i = n; i > n - k; i--) {
+                luythua *= i;
+            }
+            return luythua;
+        }
+
+        // Hàm được gọi khi người dùng nhấn nút "Tính toán"
+        function tinhtoan() {
+            // Lấy giá trị từ ô nhập số người tham gia
+            var songuoi = parseInt(document.getElementById("songuoi").value);
+
+            // Lấy giá trị từ ô nhập số người cần xếp hạng
+            var xephang = parseInt(document.getElementById("xephang").value);
+
+            // Tính toán 
+            var toan = tinh(songuoi,xephang);
+
+            // Hiển thị kết quả
+            document.getElementById("ketqua").innerHTML = "Cách xếp hạng " + xephang + " người từ " + songuoi + " người: " + toan;
+        }
+    </script>
+
+</body>
+</html>
